@@ -1,15 +1,9 @@
 $(document).ready(function() {
     status('Please select a pdf book');
 
-    //Check to see when a user has selected a file
-//    var timerId;
-//    timerId = setInterval(function() {
-//        if($('#book-file').val() !== '') {
-//            clearInterval(timerId);
-//
-//            $('#book-form').submit();
-//        }
-//    }, 500);
+		var userId;
+
+		var socket = io.connect();
 
     $('#book-form').submit(function() {
         status('Converting the book...');
@@ -24,9 +18,13 @@ $(document).ready(function() {
                     status(response.error);
                     return;
                 }
+								
+								userId = response.userId;
 
                 console.log('enabling button');
                 $("#start-button").removeAttr('disabled');
+
+								status("Book has been processed, please press start to begin the journey!");
 
             }
         });
@@ -35,7 +33,7 @@ $(document).ready(function() {
     });
 
     $("#start-button").click(function() {
-
+								
     });
 
     function status(message) {

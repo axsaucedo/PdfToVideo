@@ -10,6 +10,7 @@ $(document).ready(function() {
     });
 
     socket.on('server_message', function(data){
-        $('#receiver').append('<li>' + data + '</li>');
+				console.log(data);
+        $('#receiver').append('<li>' + data.paragraph + '</li>');
     });
 });

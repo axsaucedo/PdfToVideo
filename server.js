@@ -36,7 +36,7 @@ server.error(function(err, req, res, next){
                 },status: 500 });
     }
 });
-server.listen( port);
+server.listen(port);
 
 //Setup Socket.IO
 var io = io.listen(server);
@@ -56,9 +56,9 @@ server.post('/api/book-upload', function(req, res) {
     //var serverPath = '/books/' + req.files.book.name;
 
     console.log("working");
-    var inspect = require('eyes').inspector({maxLength:20000});
+    //var inspect = require('eyes').inspector({maxLength:20000});
     var pdf_extract = require('pdf-extract');
-    var absolute_path_to_pdf = '/Users/axsauze/Downloads/sample.pdf';
+    var absolute_path_to_pdf = '/home/axsauze/Desktop/example.pdf';
     var options = {
         type: 'text'  // extract the actual text in the pdf file
     }
@@ -73,9 +73,10 @@ server.post('/api/book-upload', function(req, res) {
     });
     processor.on('complete', function(data) {
         console.log("complete");
-        inspect(data.text_pages, 'extracted text pages');
+        //inspect(data.text_pages, 'extracted text pages');
+				console.log(data.text_pages);
         res.send({
-            paragraph : text_pages
+            paragraph : data.text_pages
         });
     });
     processor.on('error', function(err) {

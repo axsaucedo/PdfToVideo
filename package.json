@@ -1,7 +1,7 @@
 {
-  "name": "YOUR-PROJECT-NAME-HERE",
-  "description": "YOUR PROJECT DESCRIPTION HERE",
-  "author": "YOUR NAME <your@emailaddress.com>",
+  "name": "PdfToMovie",
+  "description": "Transforming PDFs into Movies",
+  "author": "Alejandro Saucedo <axsauze@gmail.com>",
   "version": "0.0.1",
   "dependencies": {
     "connect": "1.8.5",
@@ -14,7 +14,7 @@
     "eyespect": "0.1.10",
     "async": "0.1.22",
     "temp": "0.5.1",
-    "eyes": "2.0.2"
+    "eyes": "*"
   },
   "devDependencies": {
     "vows": "0.5.x",
