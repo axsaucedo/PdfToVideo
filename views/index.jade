@@ -1,15 +1,21 @@
 extends layout
 
 block content
-    div(id='content')
-        div(id='head')
-            h1(id='title') Book Story
-        form(id='book-form',action='/api/book-upload', method='post', enctype='multipart/form-data')
-            input(id='book-file', type='file', name='book')
-            input(type='submit', value='Convert!')
-        span(id='status')
-    div(id='book-story')
-        button(id='start-button', disabled='true') Start!
-    div(id='includes')
-        script(defer, src='/js/fileupload/jquery.form.js')
-        script(defer, src='/js/fileupload/upload.js')
+	link(rel='stylesheet', href='/css/index.css')
+	div(id='content')
+		div(id='head')
+			h1(id='title') Book Story
+		form(id='book-form',action='/api/book-upload', method='post', enctype='multipart/form-data')
+			input(id='book-file', type='file', name='book')
+			input(type='submit', value='Convert!')
+			input(name='uuid', type='hidden')
+		span(id='status')
+		div(id='book-story')
+			button(id='start-button', disabled='true') Start!
+		div(id='includes')
+			script(defer, src='/js/fileupload/jquery.form.js')
+			script(defer, src='/js/fileupload/upload.js')
+		div(id='main-frame')
+			div(id='screen-frame')
+			div(id='subtitles-area')
+				

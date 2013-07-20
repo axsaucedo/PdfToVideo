@@ -5,6 +5,22 @@ $(document).ready(function() {
 
 		var socket = io.connect();
 
+		socket.on('connect', function() {
+
+				socket.on('join', function(uuid) {
+								userId = uuid;
+
+							  $('input[name=uuid]').val(uuid);	
+
+								console.log("registered with id: " + uuid);
+				});
+
+				socket.on('receive-page', function(page, pageNum) {
+					console.log("received page");
+					$('#subtitles-area').html(page);
+				});
+		});
+
     $('#book-form').submit(function() {
         status('Converting the book...');
 
@@ -18,8 +34,6 @@ $(document).ready(function() {
                     status(response.error);
                     return;
                 }
-								
-								userId = response.userId;
 
                 console.log('enabling button');
                 $("#start-button").removeAttr('disabled');
@@ -33,7 +47,7 @@ $(document).ready(function() {
     });
 
     $("#start-button").click(function() {
-								
+				socket.emit('get-page', userId, 0);	
     });
 
     function status(message) {

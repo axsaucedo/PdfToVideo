@@ -4,7 +4,7 @@ var connect = require('connect')
     , io = require('socket.io')
     , fs = require('fs')
     , port = (process.env.PORT || 8081);
-
+	
 //Setup Express
 var server = express.createServer();
 server.configure(function(){
@@ -40,15 +40,37 @@ server.listen(port);
 
 //Setup Socket.IO
 var io = io.listen(server);
+
+//this function gets the currently online ids
+var socketIds = function() {
+	var onlineClients = io.sockets.clients(); //get the function to retreive the clients  
+	var idArray = [];
+
+	for (var client in onlineClients) {
+		idArray.push(onlineClients[client].id);
+	}
+
+	return idArray;
+}
+
+//This object contains the PDFs transformed to text.
+//The keys are the USER session (socket) ids
+var pdfMadeText = {};
+
 io.sockets.on('connection', function(socket){
     console.log('Client Connected');
-    socket.on('message', function(data){
-        socket.broadcast.emit('server_message',data);
-        socket.emit('server_message',data);
-    });
+	socket.emit('join', socket.id);
+
     socket.on('disconnect', function(){
-        console.log('Client Disconnected.');
+        console.log('Client Disconnected. Deleting Temporary Book.');
+		delete pdfMadeText[socket.id];
     });
+
+	socket.on('get-page', function(uuid, pageNum) {
+		console.log(uuid);
+		console.log(pageNum);
+		socket.emit('receive-page', clean_page(pdfMadeText[uuid][pageNum]), pageNum);	
+	});
 });
 
 //Handling the book upload
@@ -56,7 +78,7 @@ server.post('/api/book-upload', function(req, res) {
     //var serverPath = '/books/' + req.files.book.name;
 
     console.log("working");
-    //var inspect = require('eyes').inspector({maxLength:20000});
+
     var pdf_extract = require('pdf-extract');
     var absolute_path_to_pdf = '/home/axsauze/Desktop/example.pdf';
     var options = {
@@ -73,11 +95,12 @@ server.post('/api/book-upload', function(req, res) {
     });
     processor.on('complete', function(data) {
         console.log("complete");
-        //inspect(data.text_pages, 'extracted text pages');
-				console.log(data.text_pages);
-        res.send({
-            paragraph : data.text_pages
-        });
+
+		//console.log(data.text_pages);
+
+		pdfMadeText[req.body.uuid] = data.text_pages;
+
+        res.send({ });
     });
     processor.on('error', function(err) {
         console.log("error");
@@ -86,40 +109,11 @@ server.post('/api/book-upload', function(req, res) {
             error: err
         });
     });
-
-
-//    processor.on('complete', function(data) {
-//        console.log("Inside complete");
-//        console.log(data);
-//        res.send({
-//            paragraph: data
-//        });
-//    });
-//
-//    processor.on('error', function(err) {
-//        console.log("Inside error2");
-//        console.log(err);
-//        res.send({
-//            error: err
-//        });
-//    });
-
-    //TODO parse the pdf and save it
-
-    //Send the response of the pdf
-    console.log("responding");
-//    res.send({
-//        paragraph: "'Does school prepare children for the real world? 'Study hard and get good \
-//            grades and you will find a high-paying job with great benefits,'my parents used \
-//            to say. Their goal in life was to provide a college education for my older \
-//    sister and me, so that we would have the greatest chance for success in life. \
-//        When T finally earned my diploma in 1976-graduating with honors, and near the \
-//    top of my class, in accounting from Florida State University-my parents had \
-//    realized their goal. It was the crowning achievement of their lives. In \
-//    accordance with the 'Master Plan,' I was hired by a 'Big 8' accounting firm, and \
-//    I looked forward to a long career and retirement at an early age."
-//    });
 });
+
+function clean_page(page) {
+	return page;
+}
 
 
 ///////////////////////////////////////////
