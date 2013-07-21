@@ -1,3 +1,25 @@
 In order to run this you will need:
 
 > Change all the 'module.exports = someexport' to 'exports.someexport = someexport' in the nlp.js
+
+In order to install in Ubuntu, you will need:
+
+
+pdftk can be installed directly via apt-get
+
+apt-get install pdftk
+pdftotext is included in the poppler-utils library. To installer poppler-utils execute
+
+apt-get install poppler-utils
+ghostscript can be install via apt-get
+
+apt-get install ghostscript
+tesseract can be installed via apt-get. Note that unlike the osx install the package is called tesseract-ocr on Ubuntu, not tesseract
+
+apt-get install tesseract-ocr
+For the OCR to work, you need to have the tesseract-ocr binaries available on your path. If you only need to handle ASCII characters, the accuracy of the OCR process can be increased by limiting the tesseract output. To do this copy the alphanumeric file included with this pdf-extract module into the tess-data folder on your system. Also the eng.traineddata included with the standard tesseract-ocr package is out of date. This pdf-extract module provides an up-to-date version which you should copy into the appropriate location on your system
+
+cd <root of this module>
+cp "./share/eng.traineddata" "/usr/share/tesseract-ocr/tessdata/eng.traineddata"
+cp "./share/alphanumeric" "/usr/share/tesseract-ocr/tessdata/configs/alphanumeric"
+
