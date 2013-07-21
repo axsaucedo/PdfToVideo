@@ -14,7 +14,9 @@
     "eyespect": "0.1.10",
     "async": "0.1.22",
     "temp": "0.5.1",
-    "eyes": "*"
+    "eyes": "*",
+	"pdc" : "*",
+	"nlp" : "*"
   },
   "devDependencies": {
     "vows": "0.5.x",

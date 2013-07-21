@@ -3,7 +3,9 @@ var connect = require('connect')
     , express = require('express')
     , io = require('socket.io')
     , fs = require('fs')
-    , port = (process.env.PORT || 8081);
+    , port = (process.env.PORT || 8081)
+	, pandoc = require('pdc')
+	, nlp = require('nlp-node');
 	
 //Setup Express
 var server = express.createServer();
@@ -67,9 +69,7 @@ io.sockets.on('connection', function(socket){
     });
 
 	socket.on('get-page', function(uuid, pageNum) {
-		console.log(uuid);
-		console.log(pageNum);
-		socket.emit('receive-page', clean_page(pdfMadeText[uuid][pageNum]), pageNum);	
+		clean_page(socket, pdfMadeText[uuid][pageNum], pageNum);	
 	});
 });
 
@@ -80,7 +80,7 @@ server.post('/api/book-upload', function(req, res) {
     console.log("working");
 
     var pdf_extract = require('pdf-extract');
-    var absolute_path_to_pdf = '/home/axsauze/Desktop/example.pdf';
+    var absolute_path_to_pdf = '/home/axsauze/Desktop/richdad.pdf';
     var options = {
         type: 'text'  // extract the actual text in the pdf file
     }
@@ -111,8 +111,49 @@ server.post('/api/book-upload', function(req, res) {
     });
 });
 
-function clean_page(page) {
-	return page;
+function clean_page(socket, page, pageNum) {
+	pandoc(page, 'markdown', 'asciidoc', function(err, result) {
+		if (err)
+		    throw err;
+
+		result = result.replace(/(\s{2,}|\t)/g, '. ');
+		result = result.replace(/(\r\n|\n|\r|--+)/gm," ");
+
+		var sentences = nlp.sentenceparser(result);
+		var lessThan100Chars = [];
+
+		for ( var s in sentences ) {
+
+			var currentSentence = sentences[s];
+			currentSentence = currentSentence.replace(/[^a-zA-Z?!., ]/g, '');
+			currentSentence = currentSentence.replace(/\t+/g, ' ');
+			currentSentence = currentSentence.replace(/\s{2,}/g, ' ');
+			currentSentence = currentSentence.trim();
+			currentSentence = currentSentence.charAt(0).toUpperCase() + currentSentence.slice(1).toLowerCase();
+
+			console.log("###### " + s + " # " + currentSentence);
+			
+			if (currentSentence.length > 100) {
+				var wordArr = currentSentence.split(" ");
+				var tempSentence = "";
+
+				for (var word in wordArr) {
+					if (tempSentence.length + wordArr[word].length < 80) {
+						tempSentence += " " + wordArr[word];
+					}
+					else {
+						lessThan100Chars.push(tempSentence);
+
+						tempSentence = wordArr[word];
+					}	
+				}
+			} else {
+				lessThan100Chars.push(currentSentence);
+			}
+		}
+
+		socket.emit('receive-page', lessThan100Chars, pageNum);
+	});
 }
 
 

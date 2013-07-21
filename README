@@ -1,12 +1,3 @@
-In order to run this, you will need the following dependencies:
+In order to run this you will need:
 
-PDF-EXTRACT will need:
-brew install xpdf
-brew install gs
-brew install tesseract
-
-After tesseract is installed you need to install the alphanumeric config and an updated trained data file
-cd <root of this module>
-cp "./share/eng.traineddata" "/usr/local/Cellar/tesseract/3.01/share/tessdata/eng.traineddata"
-cp "./share/configs/alphanumeric" "/usr/local/Cellar/tesseract/3.01/share/tessdata/configs/alphanumeric"
-This file was modified by IntelliJ IDEA 12.0.1 for binding GitHub repository
+> Change all the 'module.exports = someexport' to 'exports.someexport = someexport' in the nlp.js
